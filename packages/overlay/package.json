@@ -1,0 +1,18 @@
+{
+  "name": "@ai-coach/overlay",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@ai-coach/collector": "0.1.0",
+    "@ai-coach/core": "0.1.0"
+  },
+  "devDependencies": {
+    "electron": "^43.4.0"
+  }
+}

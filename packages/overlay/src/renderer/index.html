@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" style="background: transparent">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        background: red;
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #e8e8e8;
+      }
+
+      #overlay {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(10, 12, 20, 0.82);
+      }
+
+      #priority {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #ffb84d;
+      }
+
+      #title {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      #message {
+        font-size: 13px;
+        color: #b8c0cc;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="overlay">
+      <div id="priority"></div>
+      <div id="title"></div>
+      <div id="message"></div>
+    </div>
+    <script type="module" src="../../dist/renderer/renderer.js"></script>
+  </body>
+</html>

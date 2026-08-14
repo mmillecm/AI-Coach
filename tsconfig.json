@@ -7,7 +7,12 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "declaration": true,
     "sourceMap": true
-  }
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/collector" },
+    { "path": "./packages/overlay" }
+  ]
 }

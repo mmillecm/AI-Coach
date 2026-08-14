@@ -7,11 +7,14 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "watch": "tsc -b --watch",
+    "test": "npm run build && vitest run",
+    "start": "node packages/collector/dist/cli.js",
+    "overlay": "npm run build && electron packages/overlay"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "typescript": "^5.6.0",
     "vitest": "^4.1.0"
   }

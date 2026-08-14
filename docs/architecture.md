@@ -50,14 +50,27 @@ Regras: lógica de negócio nunca fica em componentes React; a UI não conhece d
 
 ## Decisões pendentes
 
-### P-01 — Tecnologia do overlay: Tauri vs Electron
+### P-01 — Tecnologia do overlay: **RESOLVIDA → Electron (MVP)**
 
-Não bloqueia os incrementos atuais (domínio + engine + collector não têm UI).
+Escolhido **Electron** para o MVP do overlay. Motivos:
 
-Próximos critérios a avaliar (quando for construir o overlay):
-- consumo de memória (Tauri é significativamente mais leve — prioridade do contexto);
-- curva de aprendizado (Electron é só JS/TS; Tauri exige Rust);
-- transparência do overlay sobre o jogo (janela sempre-on-top, click-through) em ambas as tecnologias.
+- O processo principal do Electron **é Node.js** → reusa `@ai-coach/collector` + `@ai-coach/core` exatamente como estão (polling + avaliação).
+- Em Tauri, a webview não aceita o certificado auto-assinado da Live Client API (e tem CORS) → o polling teria que ser reescrito em Rust ou via sidecar Node.
+- Stack já dominada pelo desenvolvedor (JS/TS/React).
+- Custo: memória maior (~150MB). Se no futuro isso for problema, reavaliar Tauri mantendo o core intacto.
+
+### D-05 — Arquitetura do overlay (Electron)
+
+```text
+main process (Node.js)
+   ├─ loop: collectGameState() → RecallEvaluator.evaluate()  (a cada 3s)
+   └─ IPC "coach:recommendation" → renderer
+renderer (HTML/CSS/TS)
+   └─ janela transparente, sem borda, sempre-no-topo, click-through
+```
+
+- `core` e `collector` continuam reutilizados sem alteração.
+- Segurança: `contextIsolation: true`, `nodeIntegration: false`, comunicação só via `preload` + `contextBridge`.
 
 ### P-02 — Persistência e histórico (incremento futuro)
 
