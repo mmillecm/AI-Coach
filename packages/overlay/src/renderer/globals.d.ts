@@ -1,9 +1,9 @@
-import type { RecallRecommendation } from "@ai-coach/core";
+import type { CoachUpdate } from "../types.js";
 
 declare global {
   interface Window {
     coach: {
-      onRecommendation: (callback: (rec: RecallRecommendation | null) => void) => void;
+      onUpdate: (callback: (update: CoachUpdate) => void) => void;
     };
   }
 }

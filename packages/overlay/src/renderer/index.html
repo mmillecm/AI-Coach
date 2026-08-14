@@ -5,45 +5,153 @@
     <style>
       html,
       body {
-        background: red;
+        background: transparent;
         margin: 0;
         font-family: "Segoe UI", Arial, sans-serif;
         color: #e8e8e8;
+        overflow: hidden;
       }
 
-      #overlay {
-        display: none;
+      #panel {
+        display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
         padding: 10px 14px;
         border-radius: 10px;
         border: 1px solid rgba(255, 255, 255, 0.15);
-        background: rgba(10, 12, 20, 0.82);
+        background: rgba(10, 12, 20, 0.85);
+        user-select: none;
+      }
+
+      #header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+
+      #champion {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      #level {
+        font-size: 12px;
+        color: #b8c0cc;
+      }
+
+      #status {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      #status.connected {
+        color: #58d68d;
+      }
+
+      #status.disconnected {
+        color: #ec7063;
+      }
+
+      .stat {
+        display: grid;
+        grid-template-columns: 40px 1fr 90px;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+      }
+
+      .stat .label {
+        color: #b8c0cc;
+      }
+
+      .bar {
+        height: 8px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+
+      .bar .fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      #hp-fill {
+        background: #e74c3c;
+      }
+
+      #mana-fill {
+        background: #3498db;
+      }
+
+      .stat .value {
+        text-align: right;
+        color: #cfd6e0;
+      }
+
+      #gold {
+        font-size: 12px;
+        color: #f1c40f;
+      }
+
+      #recommendation {
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+        margin-top: 4px;
+        padding-top: 6px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
       }
 
       #priority {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 700;
         letter-spacing: 1px;
         color: #ffb84d;
       }
 
       #title {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 600;
       }
 
       #message {
-        font-size: 13px;
+        font-size: 12px;
         color: #b8c0cc;
       }
     </style>
   </head>
   <body>
-    <div id="overlay">
-      <div id="priority"></div>
-      <div id="title"></div>
-      <div id="message"></div>
+    <div id="panel">
+      <div id="header">
+        <span id="champion"></span>
+        <span id="level"></span>
+        <span id="status"></span>
+      </div>
+
+      <div class="stat">
+        <span class="label">HP</span>
+        <div class="bar"><div class="fill" id="hp-fill"></div></div>
+        <span class="value" id="hp-value"></span>
+      </div>
+
+      <div class="stat">
+        <span class="label">Mana</span>
+        <div class="bar"><div class="fill" id="mana-fill"></div></div>
+        <span class="value" id="mana-value"></span>
+      </div>
+
+      <div id="gold">Ouro: 0</div>
+
+      <div id="recommendation">
+        <div id="priority"></div>
+        <div id="title"></div>
+        <div id="message"></div>
+      </div>
     </div>
     <script type="module" src="../../dist/renderer/renderer.js"></script>
   </body>

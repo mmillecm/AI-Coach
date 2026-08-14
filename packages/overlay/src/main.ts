@@ -2,16 +2,20 @@ import { app, BrowserWindow, globalShortcut, screen } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectGameState } from "@ai-coach/collector";
-import { RecallEvaluator, type RecallRecommendation } from "@ai-coach/core";
+import { RecallEvaluator } from "@ai-coach/core";
+import type { CoachUpdate } from "./types.js";
 
 const POLL_INTERVAL_MS = 3000;
-const WINDOW_WIDTH = 380;
-const WINDOW_HEIGHT = 120;
+const WINDOW_WIDTH = 300;
+const WINDOW_HEIGHT = 190;
+const DISCONNECTED_HIDE_DELAY_MS = 3000;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const evaluator = new RecallEvaluator();
 
 let mainWindow: BrowserWindow | null = null;
+let wasConnected = false;
+let lastUpdate: CoachUpdate = { connected: false, player: null, recommendation: null };
 
 function createWindow(): void {
   const { workArea } = screen.getPrimaryDisplay();
@@ -21,6 +25,7 @@ function createWindow(): void {
     height: WINDOW_HEIGHT,
     x: workArea.x + workArea.width - WINDOW_WIDTH - 20,
     y: workArea.y + 20,
+    show: false,
     transparent: true,
     frame: false,
     alwaysOnTop: true,
@@ -28,7 +33,7 @@ function createWindow(): void {
     skipTaskbar: true,
     hasShadow: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
     },
@@ -36,26 +41,57 @@ function createWindow(): void {
 
   mainWindow.setIgnoreMouseEvents(true);
   mainWindow.setFocusable(false);
+  mainWindow.setAlwaysOnTop(true, "screen-saver");
+
+  mainWindow.webContents.on("did-finish-load", () => {
+    sendUpdate(lastUpdate);
+  });
+
   void mainWindow.loadFile(path.join(__dirname, "../src/renderer/index.html"));
 }
 
-function sendRecommendation(recommendation: RecallRecommendation | null): void {
+function sendUpdate(update: CoachUpdate): void {
+  lastUpdate = update;
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send("coach:recommendation", recommendation);
+    mainWindow.webContents.send("coach:update", update);
+  }
+}
+
+function showDisconnected(): void {
+  wasConnected = false;
+  sendUpdate({ connected: false, player: null, recommendation: null });
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.show();
+    setTimeout(() => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.hide();
+      }
+    }, DISCONNECTED_HIDE_DELAY_MS);
   }
 }
 
 async function poll(): Promise<void> {
   try {
     const state = await collectGameState();
-    sendRecommendation(evaluator.evaluate(state));
+    wasConnected = true;
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      mainWindow.show();
+    }
+    sendUpdate({
+      connected: true,
+      player: state.player,
+      recommendation: evaluator.evaluate(state),
+    });
   } catch {
-    sendRecommendation(null);
+    if (wasConnected) {
+      showDisconnected();
+    }
   }
 }
 
 app.whenReady().then(() => {
   createWindow();
+  void poll();
   setInterval(poll, POLL_INTERVAL_MS);
   globalShortcut.register("CommandOrControl+Shift+X", () => app.quit());
 });

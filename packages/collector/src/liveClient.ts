@@ -46,17 +46,17 @@ export interface GameStats {
 }
 
 export interface ActivePlayer {
-  championName: string;
   currentGold: number;
   level: number;
   summonerName: string;
-  currentHealth: number;
-  maxHealth: number;
-  currentResource: number;
-  maxResource: number;
-  resourceType: string;
-  totalGold: number;
-  items: { itemID: number; slot: number }[];
+  totalGold?: number;
+  championStats: {
+    currentHealth: number;
+    maxHealth: number;
+    resourceValue: number;
+    resourceMax: number;
+    resourceType: string;
+  };
 }
 
 export interface PlayerListEntry {

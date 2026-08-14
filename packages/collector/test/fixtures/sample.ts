@@ -9,17 +9,17 @@ export const gameStatsFixture: GameStats = {
 };
 
 export const activePlayerFixture: ActivePlayer = {
-  championName: "Yasuo",
   currentGold: 1300,
   totalGold: 5600,
   level: 8,
   summonerName: "PlayerOne",
-  currentHealth: 850,
-  maxHealth: 1200,
-  currentResource: 200,
-  maxResource: 800,
-  resourceType: "MANA",
-  items: [{ itemID: 1053, slot: 0 }],
+  championStats: {
+    currentHealth: 850,
+    maxHealth: 1200,
+    resourceValue: 200,
+    resourceMax: 800,
+    resourceType: "MANA",
+  },
 };
 
 export const playerListFixture: PlayerListEntry[] = [

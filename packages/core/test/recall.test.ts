@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { GameState, ObjectiveState, PlayerState } from "../src/domain.js";
-import { RecallEvaluator } from "../src/recall.js";
+import { DEFAULT_RECALL_CONFIG, RecallEvaluator } from "../src/recall.js";
 
 function makePlayer(partial: Partial<PlayerState> = {}): PlayerState {
   return {
@@ -42,6 +42,14 @@ function makeState(
 
 function dragonIn(gameTime: number, timeLeft: number): ObjectiveState {
   return { type: "dragon", nextSpawnSeconds: gameTime + timeLeft };
+}
+
+function objectiveIn(
+  type: ObjectiveState["type"],
+  gameTime: number,
+  timeLeft: number,
+): ObjectiveState {
+  return { type, nextSpawnSeconds: gameTime + timeLeft };
 }
 
 describe("RecallEvaluator", () => {
@@ -153,6 +161,135 @@ describe("RecallEvaluator", () => {
 
       const afterCooldown = makeState({ ...base, gameTime: 535 });
       expect(evaluator.evaluate(afterCooldown)).not.toBeNull();
+    });
+  });
+
+  describe("CA-RF-02 — outros motivos (mana e ouro)", () => {
+    it("mana baixa → recomenda com motivo mana", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentResource: 100, maxResource: 500 },
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.reason).toContain("mana baixa");
+    });
+
+    it("ouro ≥ limiar → recomenda com motivo ouro", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentGold: 1500 },
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.reason).toContain("ouro para compra");
+    });
+
+    it("vários motivos juntos são listados", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 300, maxHealth: 1000, currentResource: 100, maxResource: 500, currentGold: 1500 },
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.reason).toContain("HP baixo");
+      expect(rec!.reason).toContain("mana baixa");
+      expect(rec!.reason).toContain("ouro para compra");
+    });
+  });
+
+  describe("RF-03 — múltiplos objetivos", () => {
+    it("escolhe o objetivo mais próximo (menor tempo)", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 500, maxHealth: 1000 },
+        objectives: [objectiveIn("baron", 500, 80), objectiveIn("dragon", 500, 30)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.title).toContain("Dragão");
+    });
+
+    it("objetivo sem spawn (null) é ignorado", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 500, maxHealth: 1000 },
+        objectives: [{ type: "dragon", nextSpawnSeconds: null }, dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.title).toContain("Dragão");
+    });
+  });
+
+  describe("edge cases — divisão por zero", () => {
+    it("maxHealth 0 não quebra (HP tratado como 0%)", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 0, maxHealth: 0 },
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.reason).toContain("HP baixo");
+    });
+
+    it("maxResource 0 não quebra (recurso tratado como 0%)", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentResource: 0, maxResource: 0 },
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.reason).toContain("mana baixa");
+    });
+  });
+
+  describe("RF-04 — expiração", () => {
+    it("expiresAt = createdAt + activeDuration", () => {
+      const evaluator = new RecallEvaluator();
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 500, maxHealth: 1000 },
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state)!;
+      expect(rec.expiresAt).toBe(rec.createdAt + 20);
+    });
+  });
+
+  describe("RNF-02 — configuração customizada", () => {
+    it("respeita limiares customizados", () => {
+      const evaluator = new RecallEvaluator({ ...DEFAULT_RECALL_CONFIG, minHpPercent: 80 });
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 750, maxHealth: 1000 }, // 75% < 80% → não pronto
+        objectives: [dragonIn(500, 40)],
+      });
+      const rec = evaluator.evaluate(state);
+      expect(rec).not.toBeNull();
+      expect(rec!.reason).toContain("HP baixo");
+    });
+
+    it("com limiar mais alto, HP 75% é considerado pronto", () => {
+      const evaluator = new RecallEvaluator({ ...DEFAULT_RECALL_CONFIG, minHpPercent: 60 });
+      const state = makeState({
+        gameTime: 500,
+        player: { currentHealth: 750, maxHealth: 1000 }, // 75% > 60% → pronto
+        objectives: [dragonIn(500, 40)],
+      });
+      expect(evaluator.evaluate(state)).toBeNull();
     });
   });
 });
