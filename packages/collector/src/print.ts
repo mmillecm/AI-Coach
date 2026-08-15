@@ -33,6 +33,19 @@ export function formatGameState(state: GameState): string {
   lines.push(`Ouro: ${player.currentGold}   Ouro total: ${player.totalGold}`);
   lines.push(`Itens: ${player.items.length > 0 ? player.items.join(", ") : "nenhum"}`);
   lines.push("");
+  lines.push(`─ Objetivos ────────────────────────────`);
+  if (state.objectives.length === 0) {
+    lines.push("nenhum objetivo relevante");
+  } else {
+    for (const objective of state.objectives) {
+      const timeLeft =
+        objective.nextSpawnSeconds === null
+          ? "não respawna"
+          : `em ${formatTime(Math.max(objective.nextSpawnSeconds - state.gameTime, 0))}`;
+      lines.push(`${pad(objective.type, 8)} ${timeLeft}`);
+    }
+  }
+  lines.push("");
   lines.push(`─ Aliados ──────────────────────────────`);
   for (const ally of state.allies) {
     lines.push(

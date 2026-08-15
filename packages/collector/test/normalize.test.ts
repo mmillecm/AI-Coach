@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { normalizeGameState } from "../src/normalize.js";
-import { activePlayerFixture, eventDataFixture, gameStatsFixture, playerListFixture } from "./fixtures/sample.js";
+import { activePlayerFixture, eventDataFixture, gameStatsFixture, playerListFixture } from "../src/fixtures/sample.js";
 
 describe("normalizeGameState", () => {
   it("mapeia o tempo de jogo e metadados", () => {

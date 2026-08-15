@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { RecallRecommendation } from "@ai-coach/core";
 import { normalizeGameState } from "../src/normalize.js";
 import { formatGameState, formatRecommendation, formatTime } from "../src/print.js";
-import { activePlayerFixture, eventDataFixture, gameStatsFixture, playerListFixture } from "./fixtures/sample.js";
+import { activePlayerFixture, eventDataFixture, gameStatsFixture, playerListFixture } from "../src/fixtures/sample.js";
 
 const state = normalizeGameState(gameStatsFixture, activePlayerFixture, playerListFixture, eventDataFixture);
 

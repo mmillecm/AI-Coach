@@ -44,7 +44,7 @@ vi.mock("node:https", () => ({
 }));
 
 import { collectGameState } from "../src/index.js";
-import { activePlayerFixture, eventDataFixture, gameStatsFixture, playerListFixture } from "./fixtures/sample.js";
+import { activePlayerFixture, eventDataFixture, gameStatsFixture, playerListFixture } from "../src/fixtures/sample.js";
 
 describe("collectGameState", () => {
   it("coleta e normaliza com League aberto", async () => {

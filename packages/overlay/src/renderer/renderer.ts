@@ -21,9 +21,43 @@ function setStatus(text: string, connected: boolean): void {
   status.classList.toggle("disconnected", !connected);
 }
 
+let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showRecommendation(rec: {
+  priority: string;
+  title: string;
+  message: string;
+  createdAt: number;
+  expiresAt: number;
+}): void {
+  priority.textContent = rec.priority.toUpperCase();
+  priority.classList.remove("critical", "high", "medium");
+  priority.classList.add(rec.priority);
+  title.textContent = rec.title;
+  message.textContent = rec.message;
+  recommendation.style.display = "flex";
+
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+  }
+  const durationMs = Math.max(rec.expiresAt - rec.createdAt, 0) * 1000;
+  hideTimer = setTimeout(() => {
+    recommendation.style.display = "none";
+    hideTimer = null;
+  }, durationMs);
+}
+
+function hideRecommendation(): void {
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+  recommendation.style.display = "none";
+}
+
 window.coach.onUpdate((update) => {
   if (!update.connected || !update.player) {
-    recommendation.style.display = "none";
+    hideRecommendation();
     setStatus("desconectado", false);
     return;
   }
@@ -45,12 +79,6 @@ window.coach.onUpdate((update) => {
   setStatus(p.isDead ? "morto" : "conectado", !p.isDead);
 
   if (update.recommendation) {
-    const rec = update.recommendation;
-    priority.textContent = rec.priority.toUpperCase();
-    title.textContent = rec.title;
-    message.textContent = rec.message;
-    recommendation.style.display = "flex";
-  } else {
-    recommendation.style.display = "none";
+    showRecommendation(update.recommendation);
   }
 });

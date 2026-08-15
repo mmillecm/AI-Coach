@@ -1,4 +1,4 @@
-import type { ActivePlayer, EventData, GameStats, PlayerListEntry } from "../../src/liveClient.js";
+import type { ActivePlayer, EventData, GameStats, PlayerListEntry } from "../liveClient.js";
 
 export const gameStatsFixture: GameStats = {
   gameMode: "PRACTICETOOL",

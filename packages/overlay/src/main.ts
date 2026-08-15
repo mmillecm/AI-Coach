@@ -7,7 +7,7 @@ import type { CoachUpdate } from "./types.js";
 
 const POLL_INTERVAL_MS = 3000;
 const WINDOW_WIDTH = 300;
-const WINDOW_HEIGHT = 190;
+const WINDOW_HEIGHT = 230;
 const DISCONNECTED_HIDE_DELAY_MS = 3000;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
