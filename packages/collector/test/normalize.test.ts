@@ -16,7 +16,19 @@ describe("normalizeGameState", () => {
     expect(state.player.currentHealth).toBe(850);
     expect(state.player.maxHealth).toBe(1200);
     expect(state.player.currentGold).toBe(1300);
-    expect(state.player.items).toEqual([1053]);
+    expect(state.player.items).toEqual([1053, 3340]);
+  });
+
+  it("mapeia healthRegenRate e trinketType do jogador ativo", () => {
+    const state = normalizeGameState(gameStatsFixture, activePlayerFixture, playerListFixture, eventDataFixture);
+    expect(state.player.healthRegenRate).toBe(8);
+    expect(state.player.trinketType).toBe("totem"); // 3340 no slot 6
+  });
+
+  it("deriva trinketType dos aliados/inimigos (slot 6)", () => {
+    const state = normalizeGameState(gameStatsFixture, activePlayerFixture, playerListFixture, eventDataFixture);
+    expect(state.allies[0].trinketType).toBe("totem"); // Lulu tem 3340
+    expect(state.enemies[0].trinketType).toBeNull(); // Lux sem itens
   });
 
   it("separa aliados e inimigos corretamente", () => {

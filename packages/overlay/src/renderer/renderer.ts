@@ -24,15 +24,19 @@ function setStatus(text: string, connected: boolean): void {
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
 function showRecommendation(rec: {
+  type: string;
   priority: string;
   title: string;
   message: string;
   createdAt: number;
   expiresAt: number;
 }): void {
-  priority.textContent = rec.priority.toUpperCase();
-  priority.classList.remove("critical", "high", "medium");
+  priority.textContent = `${rec.priority.toUpperCase()} · ${rec.type}`;
+  priority.classList.remove("critical", "high", "medium", "vision");
   priority.classList.add(rec.priority);
+  if (rec.type === "VISION") {
+    priority.classList.add("vision");
+  }
   title.textContent = rec.title;
   message.textContent = rec.message;
   recommendation.style.display = "flex";

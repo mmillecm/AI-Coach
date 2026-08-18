@@ -19,6 +19,8 @@ export interface PlayerState {
   assists: number;
   creepScore: number;
   items: number[];
+  healthRegenRate: number;
+  trinketType: "totem" | "farsight" | "lens" | null;
 }
 
 export type ObjectiveType = "dragon" | "baron" | "herald";

@@ -2,7 +2,7 @@ import { app, BrowserWindow, globalShortcut, screen } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectGameState } from "@ai-coach/collector";
-import { RecallEvaluator } from "@ai-coach/core";
+import { CoachEngine } from "@ai-coach/core";
 import type { CoachUpdate } from "./types.js";
 
 const POLL_INTERVAL_MS = 3000;
@@ -11,7 +11,7 @@ const WINDOW_HEIGHT = 230;
 const DISCONNECTED_HIDE_DELAY_MS = 3000;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const evaluator = new RecallEvaluator();
+const evaluator = new CoachEngine();
 
 let mainWindow: BrowserWindow | null = null;
 let wasConnected = false;

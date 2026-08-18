@@ -70,6 +70,7 @@ function toPlayerState(entry: PlayerListEntry, active?: ActivePlayer): PlayerSta
     level: active?.level ?? entry.level,
     currentHealth: active?.championStats.currentHealth ?? 0,
     maxHealth: active?.championStats.maxHealth ?? 0,
+    healthRegenRate: active?.championStats.healthRegenRate ?? 0,
     currentResource: active?.championStats.resourceValue ?? 0,
     maxResource: active?.championStats.resourceMax ?? 0,
     resourceType: active?.championStats.resourceType ?? "NONE",
@@ -80,5 +81,20 @@ function toPlayerState(entry: PlayerListEntry, active?: ActivePlayer): PlayerSta
     assists: entry.scores.assists,
     creepScore: entry.scores.creepScore,
     items: entry.items.map((item) => item.itemID),
+    trinketType: toTrinketType(entry.items),
   };
+}
+
+function toTrinketType(items: { itemID: number; slot: number }[]): PlayerState["trinketType"] {
+  const trinket = items.find((item) => item.slot === 6);
+  if (trinket?.itemID === 3340) {
+    return "totem";
+  }
+  if (trinket?.itemID === 3350) {
+    return "farsight";
+  }
+  if (trinket?.itemID === 3364) {
+    return "lens";
+  }
+  return null;
 }

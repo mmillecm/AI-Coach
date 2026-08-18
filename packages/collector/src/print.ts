@@ -1,4 +1,4 @@
-import type { GameState, PlayerState, RecallRecommendation } from "@ai-coach/core";
+import type { CoachRecommendation, GameState, PlayerState } from "@ai-coach/core";
 
 function pad(value: string | number, length: number): string {
   return String(value).padEnd(length);
@@ -9,7 +9,7 @@ function formatHealth(p: PlayerState): string {
   return `${Math.round(p.currentHealth)}/${Math.round(p.maxHealth)} (${hpPercent}%)`;
 }
 
-export function formatRecommendation(rec: RecallRecommendation): string {
+export function formatRecommendation(rec: CoachRecommendation): string {
   return [
     "",
     `⚠ ${rec.priority.toUpperCase()} — ${rec.title}`,
@@ -32,6 +32,9 @@ export function formatGameState(state: GameState): string {
   );
   lines.push(`Ouro: ${player.currentGold}   Ouro total: ${player.totalGold}`);
   lines.push(`Itens: ${player.items.length > 0 ? player.items.join(", ") : "nenhum"}`);
+  lines.push(
+    `Regen: ${player.healthRegenRate} HP/5s   Trinket: ${player.trinketType ?? "nenhum/desconhecido"}`,
+  );
   lines.push("");
   lines.push(`─ Objetivos ────────────────────────────`);
   if (state.objectives.length === 0) {

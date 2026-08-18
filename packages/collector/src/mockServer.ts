@@ -23,12 +23,12 @@ function currentEvents(): GameEvent[] {
 function activePlayer() {
   return {
     ...activePlayerFixture,
-    currentGold: 1500,
+    currentGold: 500,
     championStats: {
       ...activePlayerFixture.championStats,
-      currentHealth: 300,
+      currentHealth: 1000,
       maxHealth: 1200,
-      resourceValue: 160,
+      resourceValue: 500,
       resourceMax: 800,
     },
   };

@@ -1,11 +1,11 @@
-import { RecallEvaluator } from "@ai-coach/core";
+import { CoachEngine } from "@ai-coach/core";
 import { collectGameState } from "./index.js";
 import { formatGameState, formatRecommendation } from "./print.js";
 
 const POLL_INTERVAL_MS = 3000;
 const RAW = process.argv.includes("--raw");
 
-const evaluator = new RecallEvaluator();
+const evaluator = new CoachEngine();
 
 async function pollOnce(): Promise<boolean> {
   try {

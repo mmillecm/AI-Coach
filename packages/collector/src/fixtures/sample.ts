@@ -16,6 +16,7 @@ export const activePlayerFixture: ActivePlayer = {
   championStats: {
     currentHealth: 850,
     maxHealth: 1200,
+    healthRegenRate: 8,
     resourceValue: 200,
     resourceMax: 800,
     resourceType: "MANA",
@@ -30,7 +31,10 @@ export const playerListFixture: PlayerListEntry[] = [
     position: "MIDDLE",
     team: "ORDER",
     summonerName: "PlayerOne",
-    items: [{ itemID: 1053, slot: 0 }],
+    items: [
+      { itemID: 1053, slot: 0 },
+      { itemID: 3340, slot: 6 },
+    ],
     scores: { assists: 1, creepScore: 42, deaths: 1, kills: 3 },
   },
   {

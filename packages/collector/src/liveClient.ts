@@ -53,6 +53,7 @@ export interface ActivePlayer {
   championStats: {
     currentHealth: number;
     maxHealth: number;
+    healthRegenRate: number;
     resourceValue: number;
     resourceMax: number;
     resourceType: string;
